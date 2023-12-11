@@ -1,9 +1,11 @@
 import streamlit as st
 import plotly.graph_objects as go
-from plotly.tools import make_subplots
+import plotly.tools as to
 import numpy as np
+import math as ma
 
 ## Nice colors https://github.com/plotly/plotly.py/issues/2192 
+## Unicode for math symbols https://www.compart.com/en/unicode/html 
 
 
 
@@ -17,17 +19,19 @@ class TrueWaveFunction:
 
 class TrialWaveFunctions:
 
-    options = ['Logistic', 'HyperbolicSecant', 'RaisedCosine']
+    options = ['Gaussian','Logistic', 'HyperbolicSecant', 'RaisedCosine']
 
     plotranges = {
-        'Logistic':         {'psi': [-5,5,0,1.25,1,0.2], 'energy': [0.2,1.6,0,2.5,0.2,0.5], 'Nx': 1000, 'Ns': 1000},
-        'HyperbolicSecant': {'psi': [-5,5,0,1.25,1,0.2], 'energy': [0.5,2,0,2.5,0.25,0.5],  'Nx': 1000, 'Ns': 1000},
-        'RaisedCosine':     {'psi': [-5,5,0,1.25,1,0.2], 'energy': [1,4,0,1.6,0.5,0.4],     'Nx': 1000, 'Ns': 1000}
+        'Gaussian':         {'psi': [-5,5,0,1.25,1,0.2], 'energy': [0.5,    3,      0,      0.8,    0.5,    0.2],   'Nx': 1000, 'Ns': 1000},
+        'Logistic':         {'psi': [-5,5,0,1.25,1,0.2], 'energy': [0.2,    1.6,    0,      2.5,    0.2,    0.5],   'Nx': 1000, 'Ns': 1000},
+        'HyperbolicSecant': {'psi': [-5,5,0,1.25,1,0.2], 'energy': [0.5,    2,      0,      2.5,    0.25,   0.5],   'Nx': 1000, 'Ns': 1000},
+        'RaisedCosine':     {'psi': [-5,5,0,1.25,1,0.2], 'energy': [1,      4,      0,      1.6,    0.5,    0.4],   'Nx': 1000, 'Ns': 1000}
     }
 
     def __init__(self, name):
         self.name = name
         self.psi = None
+        self.overlap = None
         self.energy = None
         self.plotrange_psi = None
         self.plotrange_E = None
@@ -38,6 +42,10 @@ class TrialWaveFunctions:
         return 1/np.cosh(x)
 
     def get_wavefunction(self,x,s):
+
+        if self.name == 'Gaussian':
+            N = (s/np.pi) ** 0.25
+            self.Psi = N * np.exp( -0.5 * s * x**2 )
 
         if self.name == 'Logistic':
             N = np.sqrt(6*s)
@@ -53,7 +61,32 @@ class TrialWaveFunctions:
 
         return self.Psi
     
+    def get_overlap(self,s):
+        """Gives inner-product <trial|true>**2 of trial function with true (Gaussian) function. Fitting functions from mathematica."""
+
+        if self.name == 'Gaussian':
+            overlap = np.sqrt(1/np.pi) * s ** (1/4) * np.sqrt(2*np.pi / (s + 1))
+
+        if self.name == 'Logistic':
+            overlap = -0.0933275 + 4.74778 * s - 7.25974 * s **2 + 4.64651 * s **3 - 1.13741 * s **4 + 0.000456442 * (s **5 + s **6 + s **7 + s **8 + s **9 + s **10 + s **11)
+
+        if self.name == 'HyperbolicSecant':
+            overlap = -0.109648 + 2.54709 * s - 2.14077 *s**2 + 0.795556 *s **3 - 0.118317 *s**4 + 4.43549e-6 * (s**5 + s**6 + s**7 + s**8 + s**9 + s**10 + s**11)
+
+        if self.name == 'RaisedCosine':
+            overlap = -0.139298 + 1.11729 * s - 0.34744 *s**2 + 0.0317781 *s**3 + 0.000475911 *s**4 - 6.85187e-9 * (s**5 + s**6 + s**7 + s**8 + s**9 + s**10 + s**11)
+        
+        if self.name != 'Gaussian':
+            overlap[overlap>1] = 0.9999
+
+        self.overlap = overlap
+
+        return self.overlap 
+
+    
     def get_energy(self,s):
+        if self.name == 'Gaussian':
+            self.energy = 1 / 4 *(1/s + s)
 
         if self.name == 'Logistic':
             self.energy = 1 / 10 / s ** 2 + 3 / 16 * (np.pi ** 2 - 6) * s ** 2
@@ -63,7 +96,6 @@ class TrialWaveFunctions:
 
         if self.name == 'RaisedCosine':
             self.energy = np.pi**2 / 6 / s**2 + s**2 / 6 * (1 - 15 / 2 / np.pi**2)
-
 
         return self.energy
     
@@ -104,14 +136,27 @@ class TrialWaveFunctions:
     def get_plotrange_energy(self):
         return TrialWaveFunctions.plotranges[self.name]['energy']
     
-    
 
 ##################
+
+
+
+def truncate(x,d):
+    trunc_factor = 10**d
+    x_trunc = ma.trunc(x * trunc_factor) / trunc_factor
+    return x_trunc
+
+def plot_title(overlap_value, energy_value):
+    tit = "<b>Overlap &#124;&#10216;&#936;<sub>trial</sub>&#124;&#936;<sub>true</sub>&#10217;&#124;<sup>2</sup> = {:.3f} and Energy <i>E</i> = {:.3f} </b>".format(overlap_value, energy_value)
+    return tit
+
+
+
 
 def generate_figure(plotrange_psi, plotrange_energy):
 
     # Initialize figure with subplots
-    fig2 = make_subplots(
+    fig2 = to.make_subplots(
         rows=1, 
         cols=2, 
         horizontal_spacing=0.15
@@ -236,6 +281,10 @@ def apply_variational_method(trial_name):
     # number of animated curves in the WHOLE figure (so ALL subplots combined): number of traces that should be toggled on/off is then N_animated_curves * N_steps
     N_animated_curves = 2 
 
+    #overlap data for s values
+    overlap = trial_wavefunction.get_overlap(scale_param_list)
+
+
     ### Define traces for permanent curves ### 
 
     # background gaussian
@@ -296,28 +345,46 @@ def apply_variational_method(trial_name):
     fig.data[N_parmanent_curves + N_steps].visible = True
 
     # Create and add slider
+    initial_step_index = 0
+
+    # Define initial overlap value trunctated at 3 decimal places
+    overap_value_0 = truncate(overlap[initial_step_index],3)
+    energy_value_0 = trial_wavefunction.get_energy(scale_param_list[initial_step_index])
+
+
+
     steps = []
-    for i in range(N_steps):
+    for i, s in enumerate(scale_param_list):
+        overlap_value = truncate(overlap[i],3)
+        energy_value = trial_wavefunction.get_energy(s)
         step = dict(
             method="update",
             args=[              
-                {"visible": [True] * N_parmanent_curves + [False] * N_animated_curves*N_steps},
+                {"visible": [True] * N_parmanent_curves + [False] * N_animated_curves * N_steps},
+                {"title.text": plot_title(overlap_value, energy_value)} 
                 ],  
-            label = str(round(scale_param_list[i],2))
+            label = str(round(s,2))
         )
         step["args"][0]["visible"][N_parmanent_curves + i] = True
         step["args"][0]["visible"][N_parmanent_curves + N_steps + i] = True
         steps.append(step)
 
     sliders = [dict(
-        active=0,
-        currentvalue={"prefix": '<i>s</i> = '},
+        active=initial_step_index,
+        currentvalue={"prefix": '<i>s</i> = ', "font": {"size": 14}},
         pad={"t": 60},
         steps=steps
     )]
 
     fig.update_layout(
         sliders=sliders, 
+        title={
+            'text': plot_title(overap_value_0,energy_value_0), 
+            'x': 0.5, 
+            'xanchor': 'center',
+            'yanchor': 'top'
+            
+            }
     )
     
     return fig
@@ -333,6 +400,7 @@ dist_name = st.selectbox(
 fig = apply_variational_method(dist_name)
 
 st.plotly_chart(fig)
+
 
 
 
