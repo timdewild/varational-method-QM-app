@@ -40,6 +40,9 @@ class TrialWaveFunctions:
 
     def sech(self,x):
         return 1/np.cosh(x)
+    
+    def get_name(self):
+        return self.name
 
     def get_wavefunction(self,x,s):
 
@@ -60,6 +63,121 @@ class TrialWaveFunctions:
             self.Psi = np.where(np.abs(x) <= s, N / (2*s) * (1 + np.cos(np.pi * x / s)), 0)
 
         return self.Psi
+    
+    def get_formulas(self):
+        if self.name == 'Gaussian':
+            wf_formula = r"""
+            $$
+            \small
+            \begin{align*}
+            \Psi(x,s) &= N(s)\;e^{\frac{1}{2}sx^2},\\
+            N(s) &= (s/\pi)^{1/4}.
+            \end{align*}
+            $$
+            """
+            Es_formula = r"""
+            $$
+            \small
+            \begin{align*}
+            E(s) = \frac{1}{4}\Big(\frac{1}{s}+s\Big).
+            \end{align*}
+            $$
+            """
+            s_E_star = r"""
+            $$
+            \small
+            \begin{align*}
+            s_\ast = 1,\quad\quad E_\ast = \frac{1}{2}.
+            \end{align*}
+            $$
+            """
+
+        if self.name == 'Logistic':
+            wf_formula = r"""
+            $$
+            \small
+            \begin{align*}
+            \Psi(x,s) &= \frac{N(s)}{4s}\mathrm{sech}^2(x/2s),\\
+            N(s) &= \sqrt{6s}.
+            \end{align*}
+            $$
+            """
+            Es_formula = r"""
+            $$
+            \small
+            \begin{align*}
+            E(s) = \frac{1}{10s^2}+\frac{3s^2}{16}(\pi^2-6).
+            \end{align*}
+            $$
+            """
+            s_E_star = r"""
+            $$
+            \small
+            \begin{align*}
+            s_\ast = \bigg[\frac{8}{15(\pi^2-6)}\bigg]^{1/4},\quad\quad E_\ast = 0.539.
+            \end{align*}
+            $$
+            """
+
+        if self.name == 'HyperbolicSecant':
+            wf_formula = r"""
+            $$
+            \small
+            \begin{align*}
+            \Psi(x,s) &= \frac{N(s)}{2s}\mathrm{sech}(\pi x/2s),\\
+            N(s) &= \sqrt{\pi s}.
+            \end{align*}
+            $$
+            """
+            Es_formula = r"""
+            $$
+            \small
+            \begin{align*}
+            E(s) = \frac{\pi^2}{24s^2}+\frac{s^2}{6},
+            \end{align*}
+            $$
+            """
+            s_E_star = r"""
+            $$
+            \small
+            \begin{align*}
+            s_\ast = (\pi^2/4)^{1/4},\quad\quad E_\ast = 0.524.
+            \end{align*}
+            $$
+            """
+
+
+        if self.name == 'RaisedCosine':
+            wf_formula = r"""
+            $$
+            \small
+            \begin{align*}
+            \Psi(x,s) &= \frac{N(s)}{2s}\big[1+\cos(\pi x/s)\big],\quad \,x\in[-s,s]\\
+            &= 0,\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad x\;\notin[-s,s]\\
+            N(s) &= \sqrt{4s/3}
+            \end{align*}
+            $$
+            """
+            Es_formula = r"""
+            $$
+            \small
+            \begin{align*}
+            E(s) = \frac{1}{4}\Big(\frac{1}{s}+s\Big).
+            \end{align*}
+            $$
+            """
+            s_E_star = r"""
+            $$
+            \small
+            \begin{align*}
+            s_\ast = \bigg[\frac{\pi^2}{1-15/2\pi^2}\bigg]^{1/4},\quad\quad E_\ast = 0.513.
+            \end{align*}
+            $$
+            """
+
+
+        return wf_formula, Es_formula, s_E_star
+
     
     def get_overlap(self,s):
         """Gives inner-product <trial|true>**2 of trial function with true (Gaussian) function. Fitting functions from mathematica."""
@@ -335,6 +453,14 @@ def apply_variational_method(trial_name):
                 x=[scale_param],
                 y=[trial_wavefunction.get_energy(scale_param)],
                 mode='markers',
+                marker=dict(
+                    size=6,
+                    color='LightSalmon',
+                    line=dict(
+                        width=1.5,
+                        color='Crimson'
+                        )
+                    )
                 ),
             row = 1,
             col = 2
@@ -389,20 +515,54 @@ def apply_variational_method(trial_name):
     
     return fig
 
-
 ### APP CONTENT ###
 st.title('Variational Method and Quantum Harmonic Oscillator')
 
-dist_name = st.selectbox(
-    'Choose a trial wavefunction based on the distributions below:',
-    TrialWaveFunctions.options)
+with st.sidebar:
+    st.write(
+        """
+        ## Select Trial Wavefunction
+        Choose trial wavefunction from options below:
+        """
+        )
+    dist_name = st.selectbox(
+        '',
+        TrialWaveFunctions.options, 
+        label_visibility='collapsed')
+    
+    trial_wavefunction = TrialWaveFunctions(dist_name)
+    wf_formula, Es_formula, s_E_star = trial_wavefunction.get_formulas()
 
-fig = apply_variational_method(dist_name)
+    st.write(
+        f"""
+        ## Selected: {trial_wavefunction.get_name()}
+        The selected trial wavefunction $\Psi$ with normalization factor $N$ is:
+        """
+    )
+    st.markdown(
+        wf_formula
+    )
+    st.write(
+        """The energy as function of the scale parameter $s$ is:
+        """
+    )
+    st.markdown(
+        Es_formula
+    )
+    st.write(
+        """The energy is minimized at $s=s_\\ast$ with value $E_\\ast$:"""
+    )
+    st.markdown(
+        s_E_star
+    )
+
+
+    
+
+
+fig = apply_variational_method(trial_wavefunction.get_name())
 
 st.plotly_chart(fig)
-
-
-
 
 
 
