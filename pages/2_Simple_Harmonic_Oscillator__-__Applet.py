@@ -566,23 +566,23 @@ fig = apply_variational_method(trial_wavefunction.get_name())
 
 st.plotly_chart(fig)
 
-st.write(
-    """
-    ###### Description Applet
-    The applet above shows two panels and a slider for the scale parameter $s$ to vary the shape of the trial function. 
-    By default the Gaussian trial function is selected, to select a different trial function, open the sidebar on your left and choose from the four options. 
-    Details on the selected trial function are shown in the sidebar as well. 
-    The left panel shows the trial wavefunction $\Psi$ (dark red) and the true Gaussian ground state wavefunction $\Psi_0$ (dark blue) as function of position $x$. 
-    The right panel shows the energy estimate $E(s)$ as function of the scale parameter $s$. 
-    By varying the slider for $s$, you will see that the trial function changes shape and the red-orange dot gives the energy for the current $s$-value. 
-    The exact value for $E(s)$ is given in the plot title, as well as the overlap with the exact ground state for the simple harmonic oscillator (in natural units):
-    $$
-    \Psi_0(x) = \\frac{e^{-\\frac{1}{2}x^2}}{\pi^{1/4}}. 
-    $$
-    Note that the energy becomes minimized when the trial function best resembles the true wavefunction: this is the core of the variational principle. 
-    
-    """
-)
+with st.expander("Description Applet"):
+    st.write(
+        """
+        The applet above shows two panels and a slider for the scale parameter $s$ to vary the shape of the trial function. 
+        By default the Gaussian trial function is selected, to select a different trial function, open the sidebar on your left and choose from the four options. 
+        Details on the selected trial function are shown in the sidebar as well. 
+        The left panel shows the trial wavefunction $\Psi$ (dark red) and the true Gaussian ground state wavefunction $\Psi_0$ (dark blue) as function of position $x$. 
+        The right panel shows the energy estimate $E(s)$ as function of the scale parameter $s$. 
+        By varying the slider for $s$, you will see that the trial function changes shape and the red-orange dot gives the energy for the current $s$-value. 
+        The exact value for $E(s)$ is given in the plot title, as well as the overlap with the exact ground state for the simple harmonic oscillator (in natural units):
+        $$
+        \Psi_0(x) = \\frac{e^{-\\frac{1}{2}x^2}}{\pi^{1/4}}. 
+        $$
+        Note that the energy becomes minimized when the trial function best resembles the true wavefunction: this is the core of the variational principle. 
+        
+        """
+    )
 
 
 
