@@ -70,7 +70,7 @@ class TrialWaveFunctions:
             $$
             \small
             \begin{align*}
-            \Psi(x,s) &= N(s)\;e^{\frac{1}{2}sx^2},\\
+            \Psi(x,s) &= N(s)\;e^{-\frac{1}{2}sx^2},\\
             N(s) &= (s/\pi)^{1/4}.
             \end{align*}
             $$
@@ -265,7 +265,7 @@ def truncate(x,d):
     return x_trunc
 
 def plot_title(overlap_value, energy_value):
-    tit = "<b>Overlap &#124;&#10216;&#936;<sub>trial</sub>&#124;&#936;<sub>true</sub>&#10217;&#124;<sup>2</sup> = {:.3f} and Energy <i>E</i> = {:.3f} </b>".format(overlap_value, energy_value)
+    tit = "<b>Overlap &#124;&#10216;&#936;&#124;&#936;<sub>0</sub>&#10217;&#124;<sup>2</sup> = {:.3f} and Energy <i>E</i> = {:.3f} </b>".format(overlap_value, energy_value)
     return tit
 
 
@@ -556,9 +556,33 @@ with st.sidebar:
         s_E_star
     )
 
+st.write(
+    f"""
+    #### Variational Method SHO: {trial_wavefunction.get_name()} Trial Wavefunction
+    """
+)
+
 fig = apply_variational_method(trial_wavefunction.get_name())
 
 st.plotly_chart(fig)
+
+st.write(
+    """
+    ###### Description Applet
+    The applet above shows two panels and a slider for the scale parameter $s$ to vary the shape of the trial function. 
+    By default the Gaussian trial function is selected, to select a different trial function, open the sidebar on your left and choose from the four options. 
+    Details on the selected trial function are shown in the sidebar as well. 
+    The left panel shows the trial wavefunction $\Psi$ (dark red) and the true Gaussian ground state wavefunction $\Psi_0$ (dark blue) as function of position $x$. 
+    The right panel shows the energy estimate $E(s)$ as function of the scale parameter $s$. 
+    By varying the slider for $s$, you will see that the trial function changes shape and the red-orange dot gives the energy for the current $s$-value. 
+    The exact value for $E(s)$ is given in the plot title, as well as the overlap with the exact ground state for the simple harmonic oscillator (in natural units):
+    $$
+    \Psi_0(x) = \\frac{e^{-\\frac{1}{2}x^2}}{\pi^{1/4}}. 
+    $$
+    Note that the energy becomes minimized when the trial function best resembles the true wavefunction: this is the core of the variational principle. 
+    
+    """
+)
 
 
 

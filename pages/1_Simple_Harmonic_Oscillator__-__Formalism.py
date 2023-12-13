@@ -19,7 +19,7 @@ st.write(
     $$
     E(s) = \\langle \Psi(s)|H|\Psi(s)\\rangle,
     $$
-    and minimize with respect to $s$ to find the most stringest bound on the energy $E_\\ast$ and approximation to the wavefunction $\Psi_\\ast$.
+    and minimize with respect to $s$ to find the most stringest bound on the energy $E_\\ast$ and approximation to the wavefunction $\Psi(s_\\ast)$.
 
     Inserting the Hamiltonian for the simple harmonic oscillator, we find:
     $$
@@ -33,6 +33,8 @@ st.write(
     $$
     \lim_{x\\to\pm\infty}\Psi(x,s) = 0.
     $$
+    The advantage of the second line is purely computational: this way we only have to find the first derivative of the trial function.
+    In case the trial function is real, the expression further simplifies as $\Psi=\Psi^\\ast$. 
 
 
     """
