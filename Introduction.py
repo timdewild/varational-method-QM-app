@@ -15,7 +15,7 @@ st.write(
     E[\Psi] = \\frac{\langle \Psi| H|\Psi\\rangle}{\langle \Psi|\Psi\\rangle}.
     $$
     The variational theorem states that for any trial wavefunction $E[\Psi]\geq E_0$, where $E_0$ is the true ground state energy. 
-    The inquality only saturates ($E=E_0$) if our trial wavefunction exactly equals the true ground state wavefunction of the system. 
+    The inequality only saturates ($E=E_0$) if our trial wavefunction exactly equals the true ground state wavefunction of the system. 
 
     ##### In Practice
     How does this work in practice? After all, the theorem does not tell us what trial wavefunction we should pick. 
@@ -45,12 +45,12 @@ st.write(
     \\frac{\partial E(s)}{\partial s}\\bigg|_{s=s_\\ast} = 0. 
     $$
     Note that this only gives most stringent energy $E_\\ast\equiv E(s_\\ast)$ given the chosen family of trial functions $\\Psi(s)$. 
-    Choosing a different family gives $\\tilde{\\Psi}(s)$ may well give a more stringent upper bound $\\tilde{E}_\\ast$.
+    Choosing a different family $\\tilde{\\Psi}(s)$ may well give a more stringent upper bound $\\tilde{E}_\\ast$.
     This is the essence of the variational game: if you find a trial function with a lower value $E_\\ast$, you won. 
     At least at that moment, until someone finds one with yet a lower energy. 
 
     ##### How accurate is the Variational Method?
-    Above, I mentioned that practice show you can get remarkably accurate results for the ground state energy. 
+    Above, I mentioned that practice shows you can get remarkably accurate results for the ground state energy. 
     Can we make this statement more formal? 
     Suppose the trial function that minimizes the energy, $\Psi(s_\\ast)$, differs from the true ground state $\Psi_0$ by:
     $$
@@ -67,15 +67,15 @@ st.write(
     E_\\ast = E_0 + \epsilon^2 (\\langle \Phi|H|\Phi\\rangle-E_0)+\\mathcal{O}(\epsilon^4). 
     $$
     In other words, if the difference between the trial wavefunction and the true ground state wavefunction is $\mathcal{O}(\epsilon)$, the difference from the ground state energy is $\mathcal{O}(\epsilon^2)$. 
-    This is why the variational method often gives accurate results. However, there is still no way of telling how good our trial wavefunction is: there is no way of estimating the size of $\epsilon$. 
+    This is why the variational method often gives accurate results. However, there is still no way of telling how good our trial wavefunction is. Put differently, there is no way of estimating the size of $\epsilon$. 
 
     ##### What if the Ground State is known? 
     What if the ground state of the system is actually known and we merely use the system as a playground to demonstrate the variational principle? 
-    In that case, a well-defined measure for how well the trial function resembles the true wavefunction is the overlap:
+    In that case, a measure for how well the trial function resembles the true wavefunction is the overlap:
     $$
     O(s)\equiv |\\langle \Psi(s)|\Psi_0\\rangle|^2. 
     $$
-    Assuming both the trial and true wavefunction are normalized, the closer this value gets to unity, the better the trial function resembles the true wavefunction. 
+    Assuming both the trial and true wavefunction are normalized, the closer the overlap gets to unity, the better the trial function resembles the true wavefunction. 
     Beware, only if the trial function $\Psi(s)$ exactly coincides with $\Psi_0$ will the overlap *equal* unity. 
 
     """
