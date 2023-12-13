@@ -13,8 +13,14 @@ st.write(
     $$
     H = -\\frac{1}{2}\\frac{d^2}{dx^2}+\\frac{1}{2}x^2. 
     $$
+    For this system, the ground state and energy are well known and given (in natural units) by:
+    $$
+    \Psi_0(x) = \\frac{e^{-\\frac{1}{2}x^2}}{\pi^{1/4}},\quad\quad\quad E_0 = \\frac{1}{2}. 
+    $$
+
+
     For convenience, we assume the trial wavefunction $\Psi(s)$ is normalized and depends on only one scale parameter $s$. 
-    If its not, it can be normalized by computing $N^2(s)\equiv 1/\langle\Psi(s)|\Psi(s)\\rangle$ and rescaling $\Psi(s)\\to N(s)\Psi(s)$.
+    If it is not normalized, it can be normalized by computing $N^2(s)\equiv 1/\langle\Psi(s)|\Psi(s)\\rangle$ and rescaling $\Psi(s)\\to N(s)\Psi(s)$.
     To apply the variational method, we have to construct:
     $$
     E(s) = \\langle \Psi(s)|H|\Psi(s)\\rangle,
